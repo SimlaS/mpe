@@ -1,0 +1,113 @@
+<?php
+
+class OCI
+{
+	VAR
+		$CON,
+		$STMT,
+		$ROWS,
+		
+		$error,
+
+		$dbhost,
+		$dbuser,
+		$dbpass;
+
+	function OCI($dbuser="MIP", $dbpass="ap485113", $dbhost="HURT",$error_on=true)
+	{
+		$this->dbhost = $dbhost;
+		$this->dbuser = $dbuser;
+		$this->dbpass = $dbpass;
+		
+//		if (!($this->CON = @oci_pconnect($this->dbuser, $this->dbpass, $this->dbhost)))
+//PPaczka 2013-07-10 - @oci_pconnect zamienione na @oci_connect
+		if (!($this->CON = @oci_connect($this->dbuser, $this->dbpass, $this->dbhost,'EE8ISO8859P2')))
+		{
+			if ($error_on) $this->error("Nie mo¿na po³¹czyæ siê z baz¹ danych.",null);
+			else throw new Exception(serialize(array("message"=>"Nie mozna po³¹czyæ siê z baz¹ danych. B³êdny login lub has³o.")));
+		}
+		else return true;
+	} 
+
+	function q($q,$error_on=true)
+	{
+		if (!($this->STMT = @oci_parse($this->CON, $q)))
+		{
+			if ($error_on) $this->error("Nie mo¿na wykonaæ zapytania: $q",oci_error($this->STMT));
+			else throw new Exception(serialize(oci_error($this->STMT)));
+		}
+		elseif (!@oci_execute($this->STMT,OCI_DEFAULT))
+		{
+			if ($error_on) $this->error("Nie mo¿na wykonaæ zapytania: $q",oci_error($this->STMT));
+			else throw new Exception(serialize(oci_error($this->STMT)));
+		}
+		else return $this->STMT;
+	}
+        //@s.simla - rozdzieli³em funkcje q aby mÃ³c zastosowaæ bezpieczniejszy oci_binding dla insertÃ³w
+        function parse($q,$error_on=true){
+            $this->q = $q;
+           if (!($this->STMT = @oci_parse($this->CON, $q)))
+                {
+                    if ($error_on) $this->error("Nie mo¿na wykonaæ zapytania: $q",oci_error($this->STMT));
+                    else throw new Exception(serialize(oci_error($this->STMT)));
+                } 
+            else return $this->STMT;
+        }    
+        function execute($stmt,$error_on = true){ 
+            $this->STMT = $stmt;
+            if (!@oci_execute($this->STMT,OCI_DEFAULT))
+		{
+                    if ($error_on) $this->error("Nie mo¿na wykonaæ zapytania: $this->q",oci_error($this->STMT));
+                    else throw new Exception(serialize(oci_error($this->STMT)));
+		}
+            else return $this->STMT;
+        }
+        //@s.simla
+	
+	function ret_by_row($stmt=null, $skip=0, $max=-1)
+	{
+		return $this->ret($stmt=null, $skip=0, $max=-1);
+	}
+	function ret($stmt=null, $skip=0, $max=-1)
+	{
+		if ($stmt) $this->STMT=$stmt;
+		$this->ROWS = @oci_fetch_all($this->STMT, $arr, $skip, $max, OCI_FETCHSTATEMENT_BY_ROW);
+		return $arr;
+	}
+	
+	function ret_by_col($stmt=null, $skip=0, $max=-1)
+	{
+		if ($stmt) $this->STMT=$stmt;
+		$this->ROWS = @oci_fetch_all($this->STMT, $arr, $skip, $max, OCI_FETCHSTATEMENT_BY_COLUMN);
+		return $arr;
+	}
+	
+	function commit()
+	{
+		if (!ocicommit($this->CON))
+			$this->error("Nie mo¿na zamkn¹æ transakcji.",oci_error($this->CON));
+	}
+	
+	function rollback()
+	{
+		if (!@ocirollback($this->CON))
+			$this->error("Nie mo¿na cofn¹æ transakcji.",oci_error($this->CON));
+	}
+
+	function close()
+	{
+		if (!OCILogOff($this->CON))
+			$this->error("Nie mo¿na zamkn¹æ po³¹czenia.",oci_error($this->CON));
+	}
+
+	function error($str,$err_no)
+	{
+		Echo "<BR><BR>$str<BR>ERRNO: ".serialize($err_no);
+		exit();
+	}
+	
+		
+}
+
+
+?>

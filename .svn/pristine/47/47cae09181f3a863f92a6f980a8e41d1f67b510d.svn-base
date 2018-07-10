@@ -1,0 +1,19 @@
+<?php
+include_once "models/Mpe_Rejestr_Zasilen.class.php";
+$rejestrZasilen = new Mpe_Rejestr_Zasilen_Table($db);
+//sprawdzamy czy wyslano formularz
+ if (isset($_POST['komentarz'])){
+    //pobieramy id, dla którego ma byæ wykonany insert
+    $id = (int) $_POST['id'];
+    //pobieramy komentarz
+    $komentarz = $_POST['komentarz'];
+    //insertujemy komentarz do tabeli rejestrow
+    $rejestrZasilen->updateComment($id,$komentarz);
+    $message = 'Komentarz zosta&#322; wys&#322;any.';
+ }
+//
+$brakiZasilen = $rejestrZasilen->getAllNotCompleted();
+//$taskListAwaiting = $skipZadania->getAllAwaiting();
+$view = include_once "views/main-html.php";
+return $view;
+

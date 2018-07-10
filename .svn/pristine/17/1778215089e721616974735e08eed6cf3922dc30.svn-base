@@ -1,0 +1,4 @@
+
+<?= $this->content ?>
+<?= $this->scriptElements ?>
+<script type="text/javascript"><?= $this->embeddedScript ?></script>

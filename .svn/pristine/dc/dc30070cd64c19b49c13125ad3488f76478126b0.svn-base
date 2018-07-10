@@ -1,0 +1,167 @@
+<?php
+$naglowkiKolumn = $labelsArray['columnNames'];
+$naglowkiKolumnHTML = "<tr>";
+
+foreach ($naglowkiKolumn as $key => $naglowek){ 
+    $toolTip = isset($naglowek['tooltip'])? "data-toggle='tooltip' data-placement='bottom' title='{$naglowek['tooltip']}'": '';
+    $title = isset($naglowek['title'])? $naglowek['title']:$naglowek;
+    if (in_array($key, $labelsArray['filteredColumns'])){
+        $naglowkiKolumnHTML .= "<th data-field='{$key}' data-filter-control='select' data-filter-strict-search='true' data-sortable='true'><span $toolTip >$title</span></th>";
+    }else{
+        $naglowkiKolumnHTML .= "<th data-field='{$key}' data-sortable='true'><span $toolTip >$title</span></th>";
+    }
+}
+
+if (isset($labelsArray['buttonsMain'])){ //Jeœ³i g³ówne przyciski s¹ w³¹czone, wtedy renderuj dodatkow¹ kolumnê opcji
+    $naglowkiKolumnHTML .= "<th>Opcje</th>";
+}
+$naglowkiKolumnHTML .="</tr>";
+$id = isset($labelsArray['id'])? $labelsArray['id']:'';
+$det = isset($labelsArray['details'])? $labelsArray['details']:'';
+$targetModal = isset($labelsArray['showInModal'])? 'data-target=#myModal':'';
+$wierszeHTML = "";
+    foreach($rowsDataArray as $key=>$row){
+    $tdHtml = '';
+        //jeœli potrzebujemy dodatkowe informacje aby wygenerowaæ link do innej strony mo¿emy u¿yæ $linkAdd
+        $linkAdd = isset($labelsArray['linkAdd'])? $row[$labelsArray['linkAdd']]:'';
+        $wierszeHTML .= "<tr>";    
+        foreach (array_keys($naglowkiKolumn) as $nazwaKolumny){ //pierwsza seria przycisków
+            if($nazwaKolumny===$det){                
+            $buttonsHtml = '';
+            $buttonsHtml .= "<span class='badge' >$row[$det]</span> ";
+            //generowanie przycisków w kolumnie details       
+            foreach ($labelsArray['buttons'] as $key=>$button){             
+                //sprawdzamy uprawnienia do pola
+                if(isset($labelsArray['userRoles'])){
+                    //pobieramy role u¿ytkownika i dla ka¿dej z nich porównujemy wymagane
+                    $greenLight = false;
+                    foreach($labelsArray['userRoles'] as $role){
+                        if(in_array($role, $button['allowedRoles'])){$greenLight=true;}
+                    }
+                    if($greenLight){
+                        //jeœli rola nie jest ADMIN i status nie nale¿y do allowedStatuses wówczas ukrywamy przyciski
+                        if (isset($button['allowedStatuses'])){                       
+                            if((in_array('ADMIN', $labelsArray['userRoles']))||(in_array($row['STATUS'], $button['allowedStatuses']))){                    
+                                if($row[$det]==0){
+                                    if($key !== 'Details'){
+                                        $link = $button['link'];
+                                        $linkAttr = $button['linkAttr'];
+                                        $class = $button['class'];
+                                        $faclass = $button['faClass'];
+                                        $text = $button['texttool'];
+                                        $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd} class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";
+                                    }
+                                }else{
+                                    $link = $button['link'];
+                                    $linkAttr = $button['linkAttr'];
+                                    $class = $button['class'];
+                                    $faclass = $button['faClass'];
+                                    $text = $button['texttool'];
+                                    $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd}  class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";
+                                }                           
+                            }
+
+                        }else{
+                            if($row[$det]==0){
+                                if($key !== 'Details'){
+                                    $link = $button['link'];
+                                    $linkAttr = $button['linkAttr'];
+                                    $class = $button['class'];
+                                    $faclass = $button['faClass'];
+                                    $text = $button['texttool'];
+                                    $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd}  class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";
+                                }
+                            }else{
+                                $link = $button['link'];
+                                $linkAttr = $button['linkAttr'];
+                                $class = $button['class'];
+                                $faclass = $button['faClass'];
+                                $text = $button['texttool'];
+                                $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd}  class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";
+                            }
+                        }
+                    }
+                }else{ //Jeœli zarz¹dzanie uprawnieñ nie dotyczy wtedy generuj wszystko
+                    if($row[$det]==0){
+                        if($key !== 'Details'){
+                            $link = $button['link'];
+                            $linkAttr = $button['linkAttr'];
+                            $class = $button['class'];
+                            $faclass = $button['faClass'];
+                            $text = $button['texttool'];
+                            $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd}  class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";
+                        }
+                    }else{
+                        $link = $button['link'];
+                        $linkAttr = $button['linkAttr'];
+                        $class = $button['class'];
+                        $faclass = $button['faClass'];
+                        $text = $button['texttool'];
+                        $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd}  class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";
+                    }
+                } 
+            }  
+            $tdHtml .= "<td>$buttonsHtml</td>"; 
+            }else{
+            $tdHtml .= "<td data-{$nazwaKolumny}='{$row[$nazwaKolumny]}'>$row[$nazwaKolumny]</td>";  
+            }
+        }
+        if (isset($labelsArray['buttonsMain'])){
+            $buttonsHtml = '';
+                //generowanie przycisków w kolumnie Opcje        
+                foreach ($labelsArray['buttonsMain'] as $button){ //druga seria przycisków       
+                    if(isset($labelsArray['userRoles'])){
+                        //pobieramy role u¿ytkownika i dla ka¿dej z nich porównujemy wymagane
+                        $greenLight = false;
+                        foreach($labelsArray['userRoles'] as $role){
+                            if(in_array($role, $button['allowedRoles'])){$greenLight=true;}
+                        }
+                        if($greenLight){
+                            //jeœli rola nie jest ADMIN i status nie nale¿y do allowedStatuses wówczas ukrywamy przyciski
+                            if (isset($button['allowedStatuses'])){                       
+                                if((in_array('ADMIN', $labelsArray['userRoles']))||(in_array($row['STATUS'], $button['allowedStatuses']))){                    
+                                    $link = $button['link'];
+                                    $linkAttr = $button['linkAttr'];
+                                    $class = $button['class'];
+                                    $faclass = $button['faClass'];
+                                    $text = $button['text'];
+                                    $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd}  class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";                          
+                                }
+
+                            }else{
+                                $link = $button['link'];
+                                $linkAttr = $button['linkAttr'];
+                                $class = $button['class'];
+                                $faclass = $button['faClass'];
+                                $text = $button['text'];
+                                $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd}  class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";
+                            }
+                        }
+                    }else{ //Jeœli zarz¹dzanie uprawnieñ nie dotyczy wtedy generuj wszystko
+                        $link = $button['link'];
+                        $linkAttr = $button['linkAttr'];
+                        $class = $button['class'];
+                        $faclass = $button['faClass'];
+                        $text = $button['text'];
+                        $buttonsHtml .= "<a href={$link}{$linkAttr}{$row[$id]}{$linkAdd}  class='btn btn-xs btn-$class' $targetModal data-toggle='tooltip' title='{$text}{$row[$id]}'><i class='fa fa-$faclass'></i></a> ";
+                    }         
+                }
+
+        $tdHtml .= "<td>$buttonsHtml</td>";
+        }
+    $wierszeHTML .= $tdHtml."</tr>";
+    }
+$tableParams = isset($labelsArray['tableParams'])? $labelsArray['tableParams']:'';
+return "
+<div id='list' class='row'>
+    <div class='table-responsive col-md-12' cellspacing='0' cellpadding='0'>
+        <table class='{$labelsArray['tableClass']}' id='{$labelsArray['tableName']}' data-toggle='table' data-filter-control='true' data-pagination='false' data-locale='pl-PL' $tableParams>
+            <thead>
+                $naglowkiKolumnHTML
+            </thead>
+            <tbody>
+                $wierszeHTML
+            </tbody>
+        </table>
+    </div>
+</div>";

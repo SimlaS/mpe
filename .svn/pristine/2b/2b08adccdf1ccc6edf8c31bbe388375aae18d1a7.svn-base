@@ -1,0 +1,62 @@
+<?php
+include_once "models/Table.class.php";
+class Mpe_Komentatorzy_Ip_Table extends Table{
+    
+    public function getComentatorByIp($ip){
+        $this->db->q("SELECT
+                        IMIE                       ,
+                        NAZWISKO                   
+                      FROM
+                        MPE_KOMENTATORZY_IP 
+                      WHERE 1=1
+                        AND IP = '{$ip}'
+                    ");
+        $who = $this->db->ret();
+        if($this->db->ROWS > 0){
+            return $who[0]['IMIE'].' '.$who[0]['NAZWISKO'];
+        }else{
+            return false;
+        }
+    }
+    public function getAllComentators(){
+        $this->db->q("SELECT * FROM MPE_KOMENTATORZY_IP");
+        return $this->db->ret();
+    }
+//    public function insertNewTasks($frazydlagoogle,$wzorce,$adresy,$zakresy,$strony,$nrumow,$windykatorzy,$nazwiskaklientow,$peseleregony){
+//        $i = 1;
+//        foreach ($frazydlagoogle as $key => $frazadlagoogle) {
+//            if(!empty($frazadlagoogle)){
+//                $frazadlagoogle = urlencode($frazadlagoogle);
+//                $wzorzec = urlencode($wzorce[$key]);
+//                $adres = urlencode($adresy[$key]);
+//                $zakres = (int) $zakresy[$key];
+//                $strona = (int) $strony[$key];
+//                $szukajMiasta = $_POST['szukajMiasta'][$key];
+//                $szukajTelefonu = $_POST['szukajTelefonu'][$key];
+//                $szukajAdresu = $_POST['szukajAdresu'][$key];
+//                $nrumowy = $nrumow[$key];
+//                $windykator = urlencode($windykatorzy[$key]);
+//                $nazwiskoklienta = urlencode($nazwiskaklientow[$key]);
+//                $peselregon = $peseleregony[$key];
+//                $taskNumber = date('Ymd').sprintf("%'.03d", $i);               
+//                $this->db->q("INSERT INTO skip_zadania(DATA_ZADANIA,SZUKANENAZWISKO,SZUKAJTELEFONU,SZUKAJADRESU,SZUKAJMIASTA,SZUKANEMIASTO,LICZBASTRON,ZAKRESZNAKOW,NRZADANIA,FRAZADLAGOOGLE,NRUMOWY,WINDYKATOR,NAZWISKOKLIENTA,PESELREGON)
+//                              VALUES(SYSDATE,'{$wzorzec}','{$szukajTelefonu}','{$szukajAdresu}','{$szukajMiasta}','{$adres}',{$strona},{$zakres},'{$taskNumber}','{$frazadlagoogle}','{$nrumowy}','{$windykator}','{$nazwiskoklienta}','{$peselregon}')");
+//                
+//                $i++;
+//            }
+//        }
+//        $this->db->commit();
+//    }
+//
+//    public function deleteAllAwaiting(){
+//        $this->db->q("Delete FROM skip_zadania  WHERE status is null or status <> 1");
+//        $this->db->commit();
+//    }
+//    public function updateComment($id,$komentarz){
+//        $this->db->q("Update MPE_REJESTR_ZASILEN 
+//                set TEKST_KOMENTARZA = '{$komentarz}',STATUS_OBSLUGI = 'Z'
+//                        WHERE 1=1
+//                        AND ID = {$id}");
+//        $this->db->commit();
+//    }
+}

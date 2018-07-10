@@ -1,0 +1,14 @@
+
+body {
+   padding-top: 18px;
+}
+
+.panel-default{
+    border:0px;
+}
+.text-muted {
+    font-size: 12px;
+}
+.vcenter {
+    margin-top: 3px;
+}

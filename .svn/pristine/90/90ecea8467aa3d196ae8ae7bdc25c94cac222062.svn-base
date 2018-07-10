@@ -1,0 +1,8 @@
+
+body {
+   padding-top: 18px;
+}
+
+.panel-default{
+    border:0px;
+}

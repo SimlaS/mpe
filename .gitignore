@@ -1,0 +1,4 @@
+# bez plików tymczasowych
+*.~
+#ignoruj dane połączeniowe do db
+Klasy/OCI.php

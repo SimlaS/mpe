@@ -1,0 +1,36 @@
+<?php
+
+ //obs³uga logowania przez komentatorów
+ include_once "models/Mpe_Komentatorzy_Ip.class.php";
+ $rejestrKomentatorow = new Mpe_Komentatorzy_Ip_Table($db);
+ $ip=$_SERVER['REMOTE_ADDR'];
+ //sprawdzamy czy mamy go w tabeli komentatorow
+ $komentator = $rejestrKomentatorow->getComentatorByIp($ip);
+ if($komentator){
+     //jeœli istnieje komentator wrzucamy go do sekcji nawigacji
+     include_once "models/Mpe_Rejestr_Zasilen.class.php";
+     $loginTxt = $komentator;   
+     $pageData->content = include_once 'views/navigation-html.php';
+     $rejestrZasilen = new Mpe_Rejestr_Zasilen_Table($db);
+     $brakiZasilen = $rejestrZasilen->getAllNotCompleted();     
+    //sprawdzamy czy wyslano formularz
+     if (isset($_POST['komentarz'])){
+        //pobieramy id, dla którego ma byæ wykonany insert
+        $id = (int) $_POST['id'];
+        //pobieramy komentarz
+        $komentarz = $_POST['komentarz'];
+        //insertujemy komentarz do tabeli rejestrow
+        $rejestrZasilen->updateComment($id,$komentarz);
+        $message = 'Komentarz zosta&#322; wys&#322;any.';
+     }
+     $view = include_once "views/main-html.php";
+ }else{
+     $loginTxt = "niezalogowany";
+     $pageData->content = include_once 'views/navigation-html.php';
+     $komentatorzy = $rejestrKomentatorow->getAllComentators();
+     $view = include_once "views/login-html.php";
+ }
+
+
+return $view;
+

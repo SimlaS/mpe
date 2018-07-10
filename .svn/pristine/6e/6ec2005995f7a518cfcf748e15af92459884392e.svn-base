@@ -1,0 +1,107 @@
+<?php
+
+$brakiZasilenHtml = '';
+//$awaitingSectionHtml = '';
+$countBrakiZasilen = count($brakiZasilen);
+//$czySzukacAdresu = "<span data-toggle='tooltip' data-original-title='Uwzgl&#281;dnianie wzorca dodatkowego' data-placement='top'><i class='fa fa-filter '></i></span>";
+//$czySzukacEmail = "<span data-toggle='tooltip' data-original-title='Filtrowanie adres&#243;w mailowych' data-placement='top'><i class='fa fa-envelope '></i></span>";
+//$czySzukacTel = "<span data-toggle='tooltip' data-original-title='Filtrowanie numer&#243;w telefon&#243;w' data-placement='top'><i class='fa fa-phone '></i></span>";
+//$liczbaStron = "<span data-toggle='tooltip' data-original-title='Liczba stron do przeszukania' data-placement='top'><i class='fa fa-paper-plane '></i></span>";
+//$zakres = "<span data-toggle='tooltip' data-original-title='Przeszukiwany zakres znak&#243;w [liczba]' data-placement='top'><i class='fa fa-text-width '></i></span>";
+//$czasWyszukiwania = "<span data-toggle='tooltip' data-original-title='Czas wyszukiwania [minuty]' data-placement='top'><i class='fa fa-clock-o '></i></span>";
+
+if ($countBrakiZasilen>0){
+    $naglowkiKolumn = array("Id","Data wpisu","Nazwa procesu","Tekst alarmu","Data danych","Tekst komentarza","Status","Opcje");
+    $naglowkiKolumnHTML = "<tr>";
+    foreach ($naglowkiKolumn as $key=>$naglowek){
+        $naglowkiKolumnHTML .= "<th data-field='{$key}' data-sortable='true'>$naglowek</th>";
+    }
+    $naglowkiKolumnHTML .="</tr>";
+    $wierszeHTML = "";
+    //generowanie przycisków
+    $buttons = array(
+//        'edit' => array(
+//                        'link'=>'index.php?option=edit',
+//                        'class'=>'warning',
+//                        'faClass'=>'pencil',
+//                        'textTool'=>"Edytuj komentarz dla pozycji ",
+//                        'disabled'=>'',
+//                        ),
+//        'send' => array(
+//                        'link'=>'index.php?action=send',
+//                        'class'=>'success',
+//                        'faClass'=>'envelope-o',
+//                        'textTool'=>"Wyœlij komentarz dla pozycji ",
+//                        'disabled'=>'',
+//                        ),
+        );
+    foreach($brakiZasilen as $key => $row){
+        $id = $row['ID'];
+        $wierszeHTML .= "<form id='kom_$id' name='kom_$id' method='post' action='index.php'>";
+        $wierszeHTML .= "<tr>";
+        $wierszeHTML .= "<input type=hidden name='id' value='{$id}'>";
+        $wierszeHTML .= "<td>$id</td>";
+        $wierszeHTML .= "<td>{$row['DATA_WPISU']}</td>";
+        $wierszeHTML .= "<td>{$row['NAZWA_PROCESU']}</td>";
+        $wierszeHTML .= "<td>{$row['TEKST_ALARMU']}</td>";
+        $wierszeHTML .= "<td>{$row['DATA_DANYCH']}</td>";
+        $tekstKomentarza = $row['TEKST_KOMENTARZA'];
+        $status = $row['STATUS_OBSLUGI'];
+        if($status=='O'){
+            $poleKomentarza = "<div><textarea rows=1 type='text' name='komentarz' class='form-control' autofocus >$tekstKomentarza</textarea></div>";
+            $wierszeHTML .= "<td class=col-lg-4>$poleKomentarza</td>";
+            $statusTxt = '<em class=text-warning>do wysy³ki</em>';
+            $disabled = '';
+        }else{
+            $wierszeHTML .= "<td>$tekstKomentarza</td>";
+            $statusTxt = '<em class=text-success>wys³any</em>';
+            $disabled='disabled';
+            
+        }
+        $wierszeHTML .= "<td>$statusTxt</td>";
+        $text = "Wyœlij komentarz dla pozycji nr $id";
+        $buttonsHtml = "<input type=submit class='btn btn-success' data-toggle='tooltip' title='{$text}' value='Wyœlij' $disabled >";
+        $wierszeHTML .= "<td><div >$buttonsHtml</div></td>";
+        $wierszeHTML .= "</tr>";
+        $wierszeHTML .= "</form>";
+        
+    }
+    $brakiZasilenHtml .= "
+        <table class='table table-hover' id='brakiZasilen' data-search='false' data-toggle='table'>
+            <thead>
+                $naglowkiKolumnHTML
+            </thead>
+            <tbody>
+                $wierszeHTML
+            </tbody>
+        </table>";
+}else{
+    $brakiZasilenHtml .= "Brak danych";
+}
+
+if (isset($message)){
+    $messageHtml = "<div class='alert alert-success'>
+                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                        <strong>Dzi&eogon;kujemy! </strong> $message
+                    </div>";
+}else{
+    $messageHtml = '';
+}
+
+return "    
+<div class='well' >
+$messageHtml
+    <div class='panel-group'>
+      <div class='panel panel-default'>
+        <div class='panel-heading' role='tab' id='headingOne'>
+          <div class='panel-title'>
+            <h4>Rejestr braków zasileñ</h4>
+          </div>
+        </div>
+        <div class='panel-body'>            
+            $brakiZasilenHtml
+        </div>
+      </div>
+    </div>
+</div>";
+

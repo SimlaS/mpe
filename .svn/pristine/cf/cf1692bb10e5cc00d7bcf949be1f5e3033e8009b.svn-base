@@ -1,0 +1,20 @@
+
+$(function(){
+    ///////////////USTAWIENIA POCZÄ„TKOWE ////////////////////
+    
+     //uruchomienie pol wyboru komentatorow
+    $('#komentatorzy').chosen({
+       disable_search_threshold: 1,
+       no_results_text: "Nie znaleziono wyników dla frazy",
+       search_contains: true,
+       width: "100%"
+   }).change(function(e){
+       document.loginForm.submit();
+   });
+    $('[data-toggle="tooltip"]').tooltip(); 
+
+    ////////////////OBSÅ?UGA ZDARZEÅ? //////////////////////////
+    
+});
+
+//////////////////FUNKCJE/////////////////////
